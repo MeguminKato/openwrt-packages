@@ -1,0 +1,48 @@
+name: Build luci-app-supervisord from sundaqiang/openwrt-packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout openwrt-packages repo
+        uses: actions/checkout@v3
+        with:
+          repository: sundaqiang/openwrt-packages
+          path: openwrt-packages
+
+      - name: Checkout OpenWrt SDK
+        run: |
+          # 拉取匹配的 OpenWrt SDK (示例是 x86_64 23.05.3)
+          wget https://github.com/openwrt/openwrt/releases/download/v23.05.3/openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz
+          tar -xf openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz
+
+      - name: Copy luci-app-supervisord package to SDK
+        run: |
+          cp -r openwrt-packages/luci-app-supervisord ./openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64/package/
+
+      - name: Update feeds & install packages
+        run: |
+          cd openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Configure to build luci-app-supervisord only
+        run: |
+          cd openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64
+          echo "CONFIG_PACKAGE_luci-app-supervisord=y" >> .config
+          make defconfig
+
+      - name: Build luci-app-supervisord
+        run: |
+          cd openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64
+          make package/luci-app-supervisord/compile V=s
+
+      - name: Upload compiled .ipk artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: luci-app-supervisord-ipk
+          path: openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64/bin/packages/**/luci-app-supervisord*.ipk
