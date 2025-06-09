@@ -18,31 +18,31 @@ jobs:
         run: |
           # 拉取匹配的 OpenWrt SDK (示例是 x86_64 23.05.3)
           wget https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-sdk-23.05.5-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
-          tar -xf openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz
+          tar -xf openwrt-sdk-23.05.3-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
 
       - name: Copy luci-app-supervisord package to SDK
         run: |
-          cp -r openwrt-packages/luci-app-supervisord ./openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64/package/
+          cp -r openwrt-packages/luci-app-supervisord ./openwrt-sdk-23.05.3-x86-64_gcc-12.3.0_musl.Linux-x86_64/package/
 
       - name: Update feeds & install packages
         run: |
-          cd openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64
+          cd openwrt-sdk-23.05.3-x86-64_gcc-12.3.0_musl.Linux-x86_64
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Configure to build luci-app-supervisord only
         run: |
-          cd openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64
+          cd openwrt-sdk-23.05.3-x86-64_gcc-12.3.0_musl.Linux-x86_64
           echo "CONFIG_PACKAGE_luci-app-supervisord=y" >> .config
           make defconfig
 
       - name: Build luci-app-supervisord
         run: |
-          cd openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64
+          cd openwrt-sdk-23.05.3-x86-64_gcc-12.3.0_musl.Linux-x86_64
           make package/luci-app-supervisord/compile V=s
 
       - name: Upload compiled .ipk artifact
         uses: actions/upload-artifact@v4
         with:
           name: luci-app-supervisord-ipk
-          path: openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64/bin/packages/**/luci-app-supervisord*.ipk
+          path: openwrt-sdk-23.05.3-x86-64_gcc-12.3.0_musl.Linux-x86_64/bin/packages/**/luci-app-supervisord*.ipk
