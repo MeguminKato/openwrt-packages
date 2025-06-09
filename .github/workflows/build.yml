@@ -17,7 +17,7 @@ jobs:
       - name: Checkout OpenWrt SDK
         run: |
           # 拉取匹配的 OpenWrt SDK (示例是 x86_64 23.05.3)
-          wget https://github.com/openwrt/openwrt/releases/download/v23.05.3/openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz
+          wget https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-sdk-23.05.5-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
           tar -xf openwrt-sdk-23.05.3-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz
 
       - name: Copy luci-app-supervisord package to SDK
